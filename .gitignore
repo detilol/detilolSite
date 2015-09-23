@@ -1,0 +1,9 @@
+logs/*
+!.gitkeep
+node_modules/
+bower_components/
+.tmp/
+dist/
+.project
+coverage
+/photobank/
