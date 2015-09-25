@@ -7,9 +7,10 @@
 	TimetableService.$inject = ['$http', '$log', '$q'];
 	
 	function TimetableService($http, $log, $q){
-
-	    var service = {
-	        getData: getData
+		var data = null;
+	    var service = {	    		
+	        getData: getData,
+	        getTimetable: getTimetable
 	    };
 	    return service;
 	    /**
@@ -27,6 +28,13 @@
 	    		return promise;
 	    	}
 	    	return $http.get(url);	    	
-	    }	    
+	    }
+	    
+	    function getTimetable(){
+	    	if(data==null){
+	    		data = getData('/data/timetable.json');
+	    	}
+	    	return data;
+	    }
 	};
 })();

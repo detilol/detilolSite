@@ -30,8 +30,11 @@ var gulp = require('gulp'),
     
     karma = require('karma'),
     
-    photobank = require('./config/photobank.js'),
-	lwip = require('gulp-lwip');
+    //photobank = require('./config/photobank.js'),
+    //glwip = require('gulp-lwip'),
+	//lwip = require('lwip'),
+	//glob = require('glob'),
+	im = require('node-imagemagick');
 
 
 var yeoman = {
@@ -363,21 +366,60 @@ gulp.task('cdnizer', function(){
 });
 /** Builds development distribution (DEV mode)*/
 gulp.task('build:dev', function () {
-    runSequence('ngconstant:dev', 'copy', 'vendor', 'styles', 'wiredep:dev');
+    runSequence('ngconstant:dev', 'copy', 'vendor', 'styles', 'wiredep:dev', 'photobank');
 });
 /** Builds production distribution (PROD mode)*/
 gulp.task('build:prod', function () {
-    runSequence( 'ngconstant:prod', 'copy', 'copy:js:min', 'vendor', 'styles', 'wiredep:prod', 'cdnizer');
+    runSequence( 'ngconstant:prod', 'copy', 'copy:js:min', 'vendor', 'styles', 'wiredep:prod', 'cdnizer', 'photobank');
 });
 /////////////////////Photobank/////////////////
+function processImages(files, index){
+	index = index || 0;
+	if(index>files.length-1) return;
+	console.log('processing index ', index);
+	var file = files[index];
+	
+	im.readMetadata(file, function(err, metadata){
+		  if (err) throw err;
+		  console.log('Shot at '+metadata.exif.dateTimeOriginal);
+		  processImages(files, ++index);
+	});
+	
+	
+		/*
+	var buffer = fs.readFileSync(file);	
+	
+	lwip.open(buffer, 'jpg', function(err, image) {
+		  if (err) throw err;
+		  if(image==null) throw 'Image is null';
+		  var saveFile = yeoman.dist+file;
+		  console.log('Save to ', saveFile);
+		  image = null, buffer=null;
+		  //image.crop(200, 200, function(err, image){
+			//image.toBuffer('jpg', function(err, buffer){
+				  processImages(files, ++index); 
+				  //fs.writeFile(saveFile, buffer, {encoding:'binary'}, function(){
+	            	//  processImages(files, ++index); 
+	              //});			  
+			//}); 
+		  //}); 
+	});
+	
+	*/
+}
 gulp.task('photobank', function(){
 	//gutil.log('Photobank - my personal Node module : ', gutil.colors.magenta(photobank.getSize('./photobank/DSC_2186.JPG')));
-	gulp.src("photobank/*.JPG")
-	    .pipe(lwip
-	        .rescale(300)
-	        //.exportAs("png")
-	    )
-	    .pipe(gulp.dest(yeoman.dist+'photobank/'));
+	var photobankThumb = yeoman.dist+'photobank/thumbnails/';
+	if (!fs.existsSync(photobankThumb)){
+		fs.mkdirSync(photobankThumb);
+	}
+	
+	im.convert(['photobank/*.jpg', '-thumbnail', '400x300', '-quality', '80', photobankThumb+'thumb.jpg'], 
+			function(err, stdout){
+		  		if (err) throw err;
+			}
+	);
+	
 });
 //////////////////Inject CONSTANTS in Angular module//////////////////
 /** Generates Angular application's constants in PROD mode */
