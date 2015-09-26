@@ -12,6 +12,11 @@
 	        getData: getData,
 	        getTimetable: getTimetable
 	    };
+		
+		getData('/data/timetable.json').then(function(response){
+			data = response.data;
+		});
+		
 	    return service;
 	    /**
 	     * @param url http get URL
@@ -31,9 +36,6 @@
 	    }
 	    
 	    function getTimetable(){
-	    	if(data==null){
-	    		data = getData('/data/timetable.json');
-	    	}
 	    	return data;
 	    }
 	};
