@@ -409,7 +409,11 @@ function processImages(files, index){
 }
 gulp.task('photobank', function(){
 	//gutil.log('Photobank - my personal Node module : ', gutil.colors.magenta(photobank.getSize('./photobank/DSC_2186.JPG')));
-	var photobankThumb = yeoman.dist+'photobank/thumbnails/';
+	var photobankDir = yeoman.dist+'photobank/';
+	var photobankThumb = photobankDir+'thumbnails/';
+	if (!fs.existsSync(photobankDir)){
+		fs.mkdirSync(photobankDir);
+	}
 	if (!fs.existsSync(photobankThumb)){
 		fs.mkdirSync(photobankThumb);
 	}
