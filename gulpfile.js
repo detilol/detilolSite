@@ -282,9 +282,7 @@ gulp.task('wiredep:dev', function (){
 			gulp.src([yeoman.dist+'assets/vendor/css/bootswatch.css', yeoman.dist+'assets/vendor/css/font-awesome.css', yeoman.dist+'css/app.css'], { read: false }),
 			injectCSSConfig
 		))
-		.pipe(gulp.dest(yeoman.dist))
-		.pipe(rename('404.html'))
-		.pipe(gulp.dest(yeoman.dist))
+		.pipe(gulp.dest(yeoman.dist))		
 		.pipe(browserSync.reload({stream: true}));
 });
 // In PROD mode exclude libs already included in foundation-apps at CDN, as FA itself is to be cdnized
@@ -327,6 +325,8 @@ gulp.task('wiredep:prod', function (){
 			gulp.src([yeoman.dist+'assets/vendor/css/bootswatch.css', yeoman.dist+'assets/vendor/css/font-awesome.css', yeoman.dist+'css/app.css'], { read: false }),
 			injectCSSConfig
 		))
+		.pipe(gulp.dest(yeoman.dist))
+		.pipe(rename('404.html'))
 		.pipe(gulp.dest(yeoman.dist));
 });
 gulp.task('cdnizer', function(){
