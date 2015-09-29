@@ -1,4 +1,4 @@
-(function(){
+;(function(){
 	'user strict';
 	angular.module('detilolSite')
 		.controller('CarouselCtrl', CarouselCtrl);

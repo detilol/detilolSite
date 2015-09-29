@@ -69,15 +69,15 @@ gulp.task('clean:tmp', function (cb) {
 	  del([yeoman.tmp], cb);
 });
 
-gulp.task('copy', ['copy:html', 'copy:img', 'copy:js', 'copy:root']);
+gulp.task('copy', function(){
+	return runSequence('copy:root', 'copy:img', 'copy:html');
+});
 gulp.task('copy:img', function(){
-	return es.merge(
-            gulp.src([yeoman.app+'img/**']).
-            pipe(gulp.dest(yeoman.dist+'img'))
-          );
+	return gulp.src([yeoman.app+'img/**']).
+            pipe(gulp.dest(yeoman.dist+'img'));          
 });
 gulp.task('copy:html', function(){
-	return es.merge(gulp.src([yeoman.app+'**/*.html']).pipe(gulp.dest(yeoman.dist)));
+	return gulp.src([yeoman.app+'**/*.html']).pipe(gulp.dest(yeoman.dist));
 });
 gulp.task('copy:js', function(){
 	var appjs = gulp.src([yeoman.app+'js/main.js']).pipe(gulp.dest(yeoman.dist+'assets/js'));
@@ -87,21 +87,32 @@ gulp.task('copy:js', function(){
 	
 	var mergeJs = gulp.src([ yeoman.dist+'assets/js/main.js', yeoman.dist+'assets/js/assets/*.js'])
 		.pipe(concat('app.js'))
-		.pipe(gulp.dest(yeoman.dist+'js'));
+		.pipe(gulp.dest(yeoman.dist+'scripts'));
 
 	return es.merge(appjs, auxiliary, mergeJs);
 });
 
 gulp.task('copy:js:min', function(){
-	return gulp.src([ yeoman.dist+'js/app.js'])
-		//.pipe(concat('app.min.js'))
-		.pipe(rename('app.min.js'))
-		.pipe(uglify())		
-		.pipe(gulp.dest(yeoman.dist+'js'));
+	var appjs = gulp.src([yeoman.app+'js/main.js']);//.pipe(gulp.dest(yeoman.dist+'assets/js'));
+	var auxiliary = gulp.src([yeoman.app+'js/assets/*.js', '!'+yeoman.app+'**/*_test.js']);
+		//.pipe(plugins.ignore('./client/app.js')) .pipe(filterOut)
+		//.pipe(gulp.dest(yeoman.dist+'assets/js/assets'));
+	return es.merge(appjs, auxiliary)
+	  .pipe(concat('app.min.js'))
+	  .pipe(gulp.dest(yeoman.dist+'scripts'));
+	
+	/*
+	var mergeMinJs = gulp.src([ yeoman.dist+'assets/js/main.js', yeoman.dist+'assets/js/assets/*.js'])
+		.pipe(concat('app.min.js'))
+		//.pipe(uglify())
+		.pipe(gulp.dest(yeoman.dist+'scripts'));
+	
+	return es.concat(appjs, auxiliary, mergeMinJs);
+	*/
 });
-
+/** copy all except *.html, img and js */
 gulp.task('copy:root', function(){
-	return es.merge(gulp.src([yeoman.app+'**', '!'+yeoman.app+'*.html']).pipe(gulp.dest(yeoman.dist)));
+	return gulp.src(['!'+yeoman.app+'{js,img}/**', '!'+yeoman.app+'*.html', yeoman.app+'**']).pipe(gulp.dest(yeoman.dist));
 });
 
 gulp.task('update:index', function() {
@@ -262,7 +273,7 @@ gulp.task('wiredep:dev', function (){
 		.pipe(inject(
 			gulp.src([
 			          yeoman.dist+'assets/js/main.js',
-			          yeoman.dist+'js/app.constants.js', 
+			          yeoman.dist+'scripts/app.constants.js', 
 			          yeoman.dist+'assets/js/assets/**'
 			          ], {read:false}),
 			injectScriptConfig
@@ -309,7 +320,7 @@ gulp.task('wiredep:prod', function (){
 	return gulp.src(yeoman.dist+'index.html')
 		.pipe(wiredep.stream(wiredepConfig))
 		.pipe(inject(
-			gulp.src([yeoman.dist+'js/app.min.js', yeoman.dist+'js/app.constants.js'], { read: false }),
+			gulp.src([yeoman.dist+'scripts/app.min.js', yeoman.dist+'scripts/app.constants.js'], { read: false }),
 			injectScriptConfig
 		))
 		.pipe(inject(
@@ -366,7 +377,7 @@ gulp.task('cdnizer', function(){
 });
 /** Builds development distribution (DEV mode)*/
 gulp.task('build:dev', function () {
-    runSequence('ngconstant:dev', 'copy', 'vendor', 'styles', 'wiredep:dev', 'photobank');
+    runSequence('ngconstant:dev', 'copy', 'copy:js', 'vendor', 'styles', 'wiredep:dev', 'photobank');
 });
 /** Builds production distribution (PROD mode)*/
 gulp.task('build:prod', function () {
@@ -431,14 +442,14 @@ gulp.task('ngconstant:prod', function() {
 	return gulp.src('./config/ng-const-config.prod.json')
 		.pipe(ngConstant())
 		.pipe(rename('app.constants.js'))
-		.pipe(gulp.dest(yeoman.dist+'js'));
+		.pipe(gulp.dest(yeoman.dist+'scripts'));
 });
 /** Generates Angular application's constants in DEV mode */
 gulp.task('ngconstant:dev', function() {
 	return gulp.src('./config/ng-const-config.dev.json')
 		.pipe(ngConstant())
 		.pipe(rename('app.constants.js'))
-		.pipe(gulp.dest(yeoman.dist+'js'));
+		.pipe(gulp.dest(yeoman.dist+'scripts'));
 });
 
 gulp.task('server', ['serve:dev'], function () {
@@ -469,6 +480,9 @@ gulp.task('unit-test', function (done) {
 	    var testServer = new Server({
 		    	configFile:__dirname + '/karma.conf.js',
 		    	singleRun: true,
+		    	client:{
+		    		captureConsole:true
+		    	},
 		    	//browsers: ['Chrome'],
 		    	reporters: ['spec', 'coverage'],
 		    	//reporters: ['progress', 'coverage'],

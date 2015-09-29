@@ -8,7 +8,7 @@
 	
 	config.$inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider'];
 
-	PageCtrl.$inject = ['$scope', 'BLOBS', 'timetableService'];
+	PageCtrl.$inject = ['$scope', 'BLOBS'];
 
 /**
  * Configure the Routes
@@ -49,9 +49,10 @@ function BlogCtrl() {
  * @param $scope
  * @param BLOBS constant links to BLOB resources (images, video) whether in cloud or local
  */
-function PageCtrl($scope, BLOBS, timetableService) {
+function PageCtrl($scope, BLOBS) {
   $scope.blobs = BLOBS;
-  $scope.timetable = timetableService.getTimetable();
+ 
+  //googleSpreadsheetsService.loadWorksheet(GS_ID);
   /*
   // Activates the Carousel
   $('.carousel').carousel({
