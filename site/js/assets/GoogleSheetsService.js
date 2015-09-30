@@ -8,7 +8,7 @@
 			worksheetFeed: '/feeds/worksheets/',
 			cellFeed: '/feeds/cells/',
 			worksheetFeedSuffix: '/public/full?alt=json',
-			worksheetFeedUrlTemplate: 'http://spreadsheets.google.com/feeds/worksheets/:worksheetId/public/full'
+			worksheetFeedUrlTemplate: '//spreadsheets.google.com/feeds/worksheets/:worksheetId/public/full'
 		})
 		.factory('googleSheetsService', GoogleSheetsService);
 	
@@ -70,7 +70,10 @@
 	    			},
 	    			{
 	    				getMetadata:{
-	    					method:'JSONP'
+	    					method:'JSONP',
+	    					headers:{
+	    						'Access-Control-Allow-Origin':'*'
+	    					}
 	    				}
 	    			}
 	    	);
@@ -98,7 +101,10 @@
 	    			},
 	    			{
 	    				getCells:{
-	    					method:'JSONP'
+	    					method:'JSONP',
+	    					headers:{
+	    						'Access-Control-Allow-Origin':'*'
+	    					}
 	    				}
 	    			}
 	    	);
@@ -118,8 +124,8 @@
 	    		worksheetInfo[sheetId] = worksheetInfo[sheetId] || {};
 				var link = sheet.link;				
 				for(var k=0; k<link.length; k++){
-					if(link[k].rel === gs.cellfeedSchema){						
-						worksheetInfo[sheetId].href = link[k].href;
+					if(link[k].rel === gs.cellfeedSchema){ 
+						worksheetInfo[sheetId].href = link[k].href.replace(/^http(s)?:/, '');
 						break;
 					}
 				}				
