@@ -1,6 +1,6 @@
 ;(function(){
 	'user strict';
-	angular.module('detilolSite', ['ui.router', 'ui.bootstrap', 'ngAnimate'])
+	angular.module('detilolSite', ['ui.router', 'ui.bootstrap', 'ngAnimate', 'ngResource'])
 		.controller('PageCtrl', PageCtrl)
 		.controller('BlogCtrl', BlogCtrl)
 		.constant('L', L)

@@ -195,10 +195,11 @@ gulp.task('jshint', function() {
 });
 
 gulp.task('serve:dev', ['build:dev'], function(){
+	//tunnel:detilol == http://detilol.localtunnel.me
 	browserSync({
-        open: 'local',
-        browser: 'chrome',
-        //tunnel: 'detilol',
+        open: false, //'local',
+        //browser: ['firefox'],        
+        //tunnel: true,
         port: yeoman.port,
         server: {
             baseDir: yeoman.dist

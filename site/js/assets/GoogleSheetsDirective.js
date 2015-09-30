@@ -2,7 +2,7 @@
 	'user strict';
 	
 	angular.module('detilolSite')
-		.directive('googleSheet', ['googleSpreadsheetsService', function(googleSpreadsheetsService){
+		.directive('googleSheet', ['googleSheetsService', function(googleSheetsService){
 		var directive = {
 			restrict: 'AE',
 			transclude:true,
@@ -13,7 +13,7 @@
 			link:link,
 			controller:function($scope){
 				var vm = this;
-				vm.data = googleSpreadsheetsService.getSheet($scope.worksheet, $scope.sheet);				
+				vm.data = googleSheetsService.getSheet($scope.worksheet, $scope.sheet);				
 			},
 			controllerAs:'gs'
 		};
