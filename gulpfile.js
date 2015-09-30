@@ -332,11 +332,15 @@ gulp.task('wiredep:prod', function (){
 });
 gulp.task('cdnizer', function(){
 	return gulp.src(yeoman.dist+'/index.html')
-		.pipe(cdnizer([			
+		.pipe(cdnizer([	
 			{
 				file: 'assets/vendor/js/angular.js',
 				package: 'angular',
-				cdn: '//cdn.jsdelivr.net/angularjs/${version}/${filenameMin}'
+				cdn: '//cdn.jsdelivr.net/angularjs/${version}/${filename}'
+			},
+			{
+				file: 'assets/vendor/js/angular-resource.js',				
+				cdn: '//cdn.jsdelivr.net/angularjs/1.4.2/angular-resource.min.js'
 			},
 			{
 				file: 'assets/vendor/js/angular-animate.js',
